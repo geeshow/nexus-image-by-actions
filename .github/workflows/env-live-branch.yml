@@ -7,7 +7,7 @@ on:
 
 jobs:
   call-common-deploy-to-eb:
-    uses: ./.github/workflows/deploy/common-deploy-to-ecs.yml
+    uses: ./.github/workflows/common-deploy-to-ecs.yml
     with:
       AWS_REGION: ap-northeast-2
       DOCKER_REPOSITORY: sonatype/nexus3:latest
