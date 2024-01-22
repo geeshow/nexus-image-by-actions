@@ -21,6 +21,3 @@ jobs:
 #      active_profiles_path: ./deca-user/src/main/resources/application.properties
 #      active_profiles: live
 #      ecs_task_definition: .aws/live-task-definition.json
-#    secrets:
-#      AWS_ACCESS_KEY_ID: ${{ secrets.REPO_LIVE_AWS_ACCESS_KEY_ID }}
-#      AWS_SECRET_ACCESS_KEY: ${{ secrets.REPO_LIVE_AWS_SECRET_ACCESS_KEY }}
