@@ -3,7 +3,7 @@ name: LIVE Deploy ActiveMQ to Amazon ECR
 on:
   push:
     branches:
-      - live
+      - main
 
 jobs:
   call-common-deploy-to-eb:
