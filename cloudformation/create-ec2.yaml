@@ -1,0 +1,95 @@
+Parameters:
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instances. Linked to AWS Parameter
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+
+  InstanceType:
+    Description: WebServer EC2 instance type
+    Type: String
+    Default: t3.small
+    AllowedValues:
+      - t2.small
+      - t2.medium
+      - t2.large
+      - t2.xlarge
+      - t2.2xlarge
+      - t3.small
+      - t3.medium
+      - t3.large
+      - t3.xlarge
+      - t3.2xlarge
+      - c5.large
+
+  Vpc:
+    Description: VPC to deploy EC2 instance
+    Type: AWS::EC2::VPC::Id
+
+  Subnet:
+    Description: Subnet to deploy EC2 instance
+    Type: AWS::EC2::Subnet::Id
+
+  EC2Name:
+    Description: Name of EC2 instance
+    Type: String
+    ConstraintDescription: must be a valid EC2 instance name.
+
+  LatestAmiId:
+    Description: (DO NOT CHANGE)
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+    AllowedValues:
+      - /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
+
+Resources:
+  MyCloudSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable HTTP access via port 80 and SSH access via port 22
+      VpcId: !Ref Vpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '443'
+          ToPort: '443'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '8081'
+          ToPort: '8081'
+          CidrIp: 0.0.0.0/0
+
+  NexusEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: !Ref LatestAmiId
+      KeyName: !Ref KeyName
+      Tags:
+        - Key: Name
+          Value: !Ref EC2Name
+      NetworkInterfaces:
+        - DeviceIndex: 0
+          SubnetId: !Ref Subnet
+          AssociatePublicIpAddress: true
+          GroupSet:
+            - !Ref MyCloudSecurityGroup
+      UserData:
+        Fn::Base64:
+          !Sub |
+          #!/bin/bash
+          sudo yum install -y java-1.8.0
+          wget https://sonatype-download.global.ssl.fastly.net/repository/downloads-prod-group/3/nexus-3.64.0-04-unix.tar.gz
+          tar -xvzf nexus-3.64.0-04-unix.tar.gz
+          sudo mv nexus-3.64.0-04 /opt/nexus
+          sudo mv sonatype-work /opt/sonatype-work
+          sudo adduser nexus
+          sudo chown -R nexus:nexus /opt/nexus
+          sudo chown -R nexus:nexus /opt/sonatype-work
+          sudo ln -s /opt/nexus/bin/nexus /etc/init.d/nexus
