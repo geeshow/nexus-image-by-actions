@@ -1,0 +1,31 @@
+name: Nexus deploy to S3
+on:
+  push:
+    branches: [ main ]
+
+env:
+  AWS_REGION: ap-northeast-2
+  AWS_S3_BUCKET: nexus-sample2
+  NEXUS_VERSION: nexus-3.64.0-04
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - name: Checkout Commit
+        uses: actions/checkout@v2
+
+      - name: sync s3 via aws cli
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.TERA_REPO_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.TERA_REPO_AWS_SECRET_ACCESS_KEY }}
+          SOURCE_DIR: nexus/${{ env.NEXUS_VERSION }}
+          DEST_DIR: configs
