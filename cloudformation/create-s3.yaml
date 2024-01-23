@@ -8,11 +8,15 @@ Resources:
   NexusBucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      AccessControl: BucketOwnerFullControl
       BucketName: !Ref BucketName
       OwnershipControls:
         Rules:
           - ObjectOwnership: BucketOwnerPreferred
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
       Tags:
         - Key: Name
           Value: !Ref BucketName
@@ -23,14 +27,13 @@ Resources:
       Bucket:
         Ref: 'NexusBucket'
       PolicyDocument:
-        Version: '2012-10-17'
+        Version: 2012-10-17
         Statement:
-          - Effect: Allow
+          - Sid: AllowPublicReadAccess
+            Effect: Allow
             Principal: '*'
-            Action: 's3:GetObject'
-            Resource:
-              Fn::Join:
-                - ''
-                - - 'arn:aws:s3:::'
-                  - Ref: 'NexusBucket'
-                  - '/*'
+            Resource: !Sub 'arn:aws:s3:::${NexusBucket}/*'
+            Action:
+              - 's3:GetObject'
+    DependsOn:
+      - NexusBucket

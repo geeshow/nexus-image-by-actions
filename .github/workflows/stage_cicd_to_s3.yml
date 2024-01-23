@@ -5,7 +5,7 @@ on:
 
 env:
   AWS_REGION: ap-northeast-2
-  AWS_S3_BUCKET: nexus-sample2
+  AWS_S3_BUCKET: nexus-bucket-5
   NEXUS_VERSION: nexus-3.64.0-04
 
 jobs:
