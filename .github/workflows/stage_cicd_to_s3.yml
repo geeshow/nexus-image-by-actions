@@ -25,7 +25,7 @@ jobs:
         env:
           AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET }}
           AWS_REGION: ${{ env.AWS_REGION }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.TERA_REPO_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.TERA_REPO_AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.REPO_LIVE_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.REPO_LIVE_AWS_SECRET_ACCESS_KEY }}
           SOURCE_DIR: nexus/${{ env.NEXUS_VERSION }}
           DEST_DIR: configs
